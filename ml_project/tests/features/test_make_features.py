@@ -1,11 +1,7 @@
-from typing import List
-
-import numpy as np
 import pandas as pd
 import pytest
 from numpy.testing import assert_allclose
 
-from heart_disease_classification.data.make_dataset import read_data
 from heart_disease_classification.params.feature_params import FeatureParams
 from heart_disease_classification.features.build_features import make_features, extract_target, build_transformer
 
@@ -20,12 +16,7 @@ def toy_dataframe():
 
 
 @pytest.fixture
-def feature_params(
-    categorical_features: List[str],
-    features_to_drop: List[str],
-    numerical_features: List[str],
-    target_col: str,
-) -> FeatureParams:
+def feature_params() -> FeatureParams:
     params = FeatureParams(
         categorical_features=["categorical_feature"],
         numerical_features=["numerical_feature"],

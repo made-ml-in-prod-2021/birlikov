@@ -16,16 +16,16 @@ def fake_dataset_csv_file(tmpdir_factory):
     return dataset_path
 
 
-def test_load_dataset(dataset_path: str):
-    data = read_data(dataset_path)
+def test_load_dataset(fake_dataset_csv_file: str):
+    data = read_data(fake_dataset_csv_file)
     assert isinstance(data, pd.DataFrame)
-    assert data.shape[0] > 10
+    assert 10 == data.shape[0]
 
 
-def test_split_dataset(tmpdir, dataset_path: str):
+def test_split_dataset(tmpdir, fake_dataset_csv_file: str):
     val_size = 0.2
     splitting_params = SplittingParams(val_size=val_size, random_state=17)
-    data = read_data(dataset_path)
+    data = read_data(fake_dataset_csv_file)
     train_df, val_df = split_train_val_data(data, splitting_params)
     assert isinstance(train_df, pd.DataFrame)
     assert isinstance(val_df, pd.DataFrame)
