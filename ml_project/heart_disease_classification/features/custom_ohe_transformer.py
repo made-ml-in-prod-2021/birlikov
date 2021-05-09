@@ -28,6 +28,7 @@ class CustomOneHotTransformer(BaseEstimator):
             col, val = ohe_col.rsplit("_", 1)
             ohe_df[ohe_col] = df[col] == val
 
+        ohe_df = ohe_df.astype(int)
         return ohe_df
 
     def fit_transform(self, df, y = None):
