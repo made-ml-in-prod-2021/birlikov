@@ -1,6 +1,6 @@
 import pandas as pd
 
-from heart_disease_classification.features import CustomOneHotTransformer
+from heart_disease_classification.features.custom_ohe_transformer import CustomOneHotTransformer
 
 
 def test_custom_ohe_transformer():
