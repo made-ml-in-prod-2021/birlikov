@@ -1,5 +1,5 @@
 input_data_path: "data/raw/heart.csv"
-output_model_path: "saved_models/classification_model.pkl"
+output_model_path: "saved_models/RF_classifier.pkl"
 metric_path: "saved_models/metrics.json"
 splitting_params:
   val_size: 0.2

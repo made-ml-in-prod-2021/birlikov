@@ -36,10 +36,7 @@ def build_numerical_pipeline() -> Pipeline:
     return num_pipeline
 
 
-def make_features(transformer: ColumnTransformer, df: pd.DataFrame, params: FeatureParams) -> pd.DataFrame:
-    cols_to_drop = [c for c in params.features_to_drop if c in df.columns]
-    if cols_to_drop:
-        df = df.drop(columns=cols_to_drop)
+def make_features(transformer: ColumnTransformer, df: pd.DataFrame) -> pd.DataFrame:
     transformed = transformer.transform(df)
     return transformed
 

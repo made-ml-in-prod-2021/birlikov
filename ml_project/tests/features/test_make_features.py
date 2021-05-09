@@ -30,7 +30,7 @@ def test_make_features(toy_dataframe: pd.DataFrame, feature_params: FeatureParam
     data = toy_dataframe
     transformer = build_transformer(feature_params)
     transformer.fit(data)
-    features = make_features(transformer, data, feature_params)
+    features = make_features(transformer, data)
     assert not pd.isnull(features).any().any()
 
 

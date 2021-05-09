@@ -44,7 +44,7 @@ def features_and_target(fake_dataset_csv_file: str) -> Tuple[pd.DataFrame, pd.Se
     data = read_data(fake_dataset_csv_file)
     transformer = build_transformer(params)
     transformer.fit(data)
-    features = make_features(transformer, data, params)
+    features = make_features(transformer, data)
     target = extract_target(data, params)
     return features, target
 
