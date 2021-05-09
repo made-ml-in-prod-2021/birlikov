@@ -9,12 +9,14 @@ setup(
     author="Shokhan Birlikov",
     install_requires=[
         "click==7.1.2",
-        "python-dotenv>=0.5.1",
-        "scikit-learn==0.24.1",
+        "py==1.10.0",
+        "scikit-learn==0.24.2",
         "dataclasses==0.8",
-        "pyyaml==3.11",
-        "marshmallow-dataclass==8.3.0",
+        "pyyaml==5.4.1",
+        "marshmallow-dataclass==8.4.1",
         "pandas==1.1.5",
+        "numpy==1.19.5",
+        "pytest==6.2.4",
     ],
     license="MIT",
 )
