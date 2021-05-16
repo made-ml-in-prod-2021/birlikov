@@ -1,6 +1,6 @@
 input_data_path: "data/raw/heart.csv"
 output_model_path: "saved_models/LogReg_classifier.pkl"
-metric_path: "saved_models/metrics.json"
+metric_path: "saved_models/lr_metrics.json"
 splitting_params:
   val_size: 0.2
   random_state: 17
