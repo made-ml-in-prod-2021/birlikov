@@ -25,3 +25,25 @@ $ python train_pipeline.py configs/train_config_2.yaml
 ```shell script
 $ pytest tests/*
 ```
+
+##### Prject overview:
+```
+├── LICENSE
+├── README.md       <- Readme for ml_project
+├── configs         <- training configs
+├── data
+│   └── raw         <- Original dataset
+├── heart_disease_classification            <- Main folder with source codes
+│   ├── __init__.py
+│   ├── data                                <- Scripts for data preprocessing
+│   ├── features                            <- Scripts for feature extraction
+│   ├── models                              <- Scripts for model training and testing
+│   └── params                              <- Scripts for parameter dataclasses
+├── logger.py                               <- Logger
+├── notebooks                               <- Notebooks with EDA
+├── requirements.txt                        <- The requirements file for reproducing
+├── saved_models                            <- Serialized trained models and metrics on validation set
+├── setup.py                                <- Makes project pip installable
+├── tests                                   <- Test for source codes
+└── train_pipeline.py                       <- Main entry point script
+```
