@@ -5,8 +5,6 @@ import pickle
 from sklearn.pipeline import Pipeline
 from pydantic import BaseModel, Field
 
-from .custom_transformer_script import features
-
 
 def load_object(path: str) -> Pipeline:
     with open(path, "rb") as f:
