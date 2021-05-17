@@ -1,18 +1,53 @@
 import os
 from typing import Optional
+import logging
 
+import pandas as pd
+import pickle
 import uvicorn
 from fastapi import FastAPI
+
 from sklearn.pipeline import Pipeline
+from pydantic import BaseModel, Field
 
 
-from .logger import logger
-from .utils import load_object, make_predict, InputFeatures, Prediction
-
+logger = logging.getLogger(__name__)
 
 model: Optional[Pipeline] = None
 
 app = FastAPI()
+
+
+def load_object(path: str) -> Pipeline:
+    with open(path, "rb") as f:
+        return pickle.load(f)
+
+
+class InputFeatures(BaseModel):
+    age: int = Field(default=30, gt=0, description="Age in years.")
+    sex: int = Field(default=1, description="1 - male, 0 - female.")
+    cp: int = Field(default=0, description="Chest pain type: 0, 1, 2 or 3.")
+    trestbps: int = Field(default=130, description="Resting blood pressure (in mm Hg on admission to the hospital).")
+    chol: int = Field(default=200, description="Serum cholestoral in mg/dl.")
+    fbs: int = Field(default=0, description="(fasting blood sugar > 120 mg/dl) (1 = true; 0 = false).")
+    restecg: int = Field(default=0, description="Resting electrocardiographic results.")
+    thalach: int = Field(default=150, description="Maximum heart rate achieved.")
+    exang: int = Field(default=0, description="Exercise induced angina (1 = yes; 0 = no).")
+    oldpeak: float = Field(default=2.0, description="ST depression induced by exercise relative to rest.")
+    slope: int = Field(default=0, description="The slope of the peak exercise ST segment.")
+    ca: int = Field(default=0, description="Number of major vessels (0-3) colored by flourosopy.")
+    thal: int = Field(default=0, description="Thalium Stress Test Result.")
+
+
+class Prediction(BaseModel):
+    prediction: int
+
+
+def make_predict(request: InputFeatures, model: Pipeline) -> Prediction:
+    df = pd.DataFrame([dict(request)])
+    pred = model.predict(df)
+    return Prediction(prediction=pred)
+
 
 
 @app.get("/")
@@ -23,7 +58,7 @@ def main():
 @app.on_event("startup")
 def load_model():
     global model
-    model_path = os.getenv("PATH_TO_MODEL", "RF_classifier.pkl")
+    model_path = os.getenv("PATH_TO_MODEL", "RF_clf_pipeline.pkl")
     if model_path is None:
         err = f"PATH_TO_MODEL {model_path} is None"
         logger.error(err)
@@ -37,7 +72,7 @@ def health() -> bool:
     return not (model is None)
 
 
-@app.get("/predict/", response_model=Prediction)
+@app.post("/predict", response_model=Prediction)
 def predict(request: InputFeatures):
     return make_predict(request, model)
 
