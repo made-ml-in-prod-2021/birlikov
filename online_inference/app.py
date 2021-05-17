@@ -1,5 +1,5 @@
 import os
-from typing import List, Optional
+from typing import Optional
 
 import uvicorn
 from fastapi import FastAPI
@@ -7,7 +7,7 @@ from sklearn.pipeline import Pipeline
 
 
 from .logger import logger
-from .utils import load_object, make_predict, InputRequest, Prediction
+from .utils import load_object, make_predict, InputFeatures, Prediction
 
 
 model: Optional[Pipeline] = None
@@ -23,7 +23,7 @@ def main():
 @app.on_event("startup")
 def load_model():
     global model
-    model_path = os.getenv("PATH_TO_MODEL")
+    model_path = os.getenv("PATH_TO_MODEL", "RF_classifier.pkl")
     if model_path is None:
         err = f"PATH_TO_MODEL {model_path} is None"
         logger.error(err)
@@ -32,13 +32,13 @@ def load_model():
     model = load_object(model_path)
 
 
-@app.get("/healz")
+@app.get("/health")
 def health() -> bool:
     return not (model is None)
 
 
 @app.get("/predict/", response_model=Prediction)
-def predict(request: InputRequest):
+def predict(request: InputFeatures):
     return make_predict(request, model)
 
 
