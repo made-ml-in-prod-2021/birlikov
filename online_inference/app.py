@@ -1,11 +1,11 @@
 import os
-from typing import Optional
+from typing import Optional, Union, Tuple
 import logging
 
 import pandas as pd
 import pickle
 import uvicorn
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 
 from sklearn.pipeline import Pipeline
 from pydantic import BaseModel, Field
@@ -17,6 +17,11 @@ model: Optional[Pipeline] = None
 
 app = FastAPI()
 
+EXPECTED_COLUMNS = ["age", "sex", "cp",
+                    "trestbps", "chol", "fbs",
+                    "restecg", "thalach", "exang",
+                    "oldpeak", "slope", "ca", "thal"]
+
 
 def load_object(path: str) -> Pipeline:
     with open(path, "rb") as f:
@@ -24,10 +29,10 @@ def load_object(path: str) -> Pipeline:
 
 
 class InputFeatures(BaseModel):
-    age: int = Field(default=30, gt=0, description="Age in years.")
-    sex: int = Field(default=1, description="1 - male, 0 - female.")
+    age: int = Field(default=None, gt=0, description="Age in years.")
+    sex: int = Field(default=0, lt=2, description="1 - male, 0 - female.")
     cp: int = Field(default=0, description="Chest pain type: 0, 1, 2 or 3.")
-    trestbps: int = Field(default=130, description="Resting blood pressure (in mm Hg on admission to the hospital).")
+    trestbps: int = Field(default=120, description="Resting blood pressure (in mm Hg on admission to the hospital).")
     chol: int = Field(default=200, description="Serum cholestoral in mg/dl.")
     fbs: int = Field(default=0, description="(fasting blood sugar > 120 mg/dl) (1 = true; 0 = false).")
     restecg: int = Field(default=0, description="Resting electrocardiographic results.")
@@ -43,8 +48,14 @@ class Prediction(BaseModel):
     prediction: int
 
 
-def make_predict(request: InputFeatures, model: Pipeline) -> Prediction:
+def make_predict(request: InputFeatures, model: Pipeline) \
+        -> Union[HTTPException, Prediction]:
     df = pd.DataFrame([dict(request)])
+
+    # adding toy data validation
+    if df['cp'].values[0] not in [0, 1, 2, 3]:
+        raise HTTPException(status_code=400, detail="Chest pain type must be on of: 0, 1, 2 or 3.")
+
     pred = model.predict(df)
     return Prediction(prediction=pred)
 
@@ -72,7 +83,7 @@ def health() -> bool:
     return not (model is None)
 
 
-@app.post("/predict", response_model=Prediction)
+@app.post("/predict")
 def predict(request: InputFeatures):
     return make_predict(request, model)
 
