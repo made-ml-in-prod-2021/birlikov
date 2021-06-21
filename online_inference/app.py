@@ -1,10 +1,13 @@
 import os
-from typing import Optional, Union, Tuple
+from typing import Optional, Union
 import logging
+import time
+import signal
 
 import pandas as pd
 import pickle
 import uvicorn
+from threading import Thread
 from fastapi import FastAPI, HTTPException
 
 from sklearn.pipeline import Pipeline
@@ -69,6 +72,10 @@ def main():
 @app.on_event("startup")
 def load_model():
     global model
+
+    # Simulating 20 sec loading ...
+    time.sleep(20)
+
     model_path = os.getenv("PATH_TO_MODEL", "RF_clf_pipeline.pkl")
     if model_path is None:
         err = f"PATH_TO_MODEL {model_path} is None"
@@ -88,5 +95,20 @@ def predict(request: InputFeatures):
     return make_predict(request, model)
 
 
+def crash_app(pid):
+    # simulating crash after 60 seconds
+    time.sleep(80)
+    os.kill(pid, signal.SIGUSR1)
+
+
 if __name__ == "__main__":
+    # simulating app crash after 60 seconds
+    main_pid = os.getpid()
+    thread = Thread(
+        target=crash_app, daemon=True, args=(main_pid,)
+    )
+    thread.start()
+
+    # running main app
     uvicorn.run("app:app", host="0.0.0.0", port=os.getenv("PORT", 8000))
+

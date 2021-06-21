@@ -18,7 +18,7 @@ if __name__ == "__main__":
                     }
 
     response = requests.post(
-        "http://localhost:52376/predict",
+        "http://0.0.0.0:8000/predict",
         json=json_data,
     )
     print(f"Status code: {response.status_code}")
