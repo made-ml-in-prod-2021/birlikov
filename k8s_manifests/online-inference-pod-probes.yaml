@@ -1,0 +1,27 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: fastapi-ml
+  labels:
+    app: fastapi-ml
+spec:
+  containers:
+    - image: shokhan/made_ml_prod_hw2_online_inference:v2
+      name: fastapi-ml
+      ports:
+        - containerPort: 8000
+      readinessProbe:
+        httpGet:
+          path: /healthz
+          port: 8000
+        initialDelaySeconds: 20
+        periodSeconds: 3
+      livenessProbe:
+        httpGet:
+          path: /healthz
+          port: 8080
+          httpHeaders:
+            - name: Custom-Header
+              value: Awesome
+        initialDelaySeconds: 20
+        periodSeconds: 3
